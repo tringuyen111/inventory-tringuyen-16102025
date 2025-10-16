@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Organizations from "./pages/Organizations";
 import Branches from "./pages/Branches";
@@ -28,7 +28,7 @@ const Partners = () => <Placeholder title="Partners" />;
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -51,7 +51,7 @@ function App() {
         </Route>
       </Routes>
       <Toaster />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
