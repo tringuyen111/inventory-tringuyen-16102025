@@ -39,8 +39,6 @@ export type Location = {
   type: "storage" | "receiving" | "staging";
   capacity: number | null;
   allow_mixed_lot: boolean;
-  zone: string | null;
-  bin: string | null;
   warehouse?: { name: string } | null;
 };
 
@@ -49,15 +47,39 @@ export interface Database {
     Tables: {
       organization: {
         Row: Organization;
+        // Fix: Add Insert and Update types to fix Supabase client type inference for mutations.
+        Insert: {
+          code: string;
+          name: string;
+        };
+        Update: Partial<Omit<Organization, "id" | "created_at">>;
       };
       branch: {
         Row: Branch;
+        // Fix: Add Insert and Update types to fix Supabase client type inference for mutations.
+        Insert: {
+          code: string;
+          name: string;
+          organization_id: string;
+        };
+        Update: Partial<Omit<Branch, "id" | "created_at" | "organization">>;
       };
       warehouse: {
         Row: Warehouse;
+        // Fix: Add Insert and Update types to fix Supabase client type inference for mutations.
+        Insert: {
+          code: string;
+          name: string;
+          address?: string | null;
+          branch_id: string;
+        };
+        Update: Partial<Omit<Warehouse, "id" | "created_at" | "branch">>;
       };
       location: {
         Row: Location;
+        // Fix: Add Insert and Update types to fix Supabase client type inference for mutations.
+        Insert: Omit<Location, "id" | "created_at" | "status" | "warehouse">;
+        Update: Partial<Omit<Location, "id" | "created_at" | "warehouse">>;
       };
     };
     Views: {

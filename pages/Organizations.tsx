@@ -5,7 +5,7 @@ import type { Organization } from "../types";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Label } from "../components/ui/Label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/Dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogPortal, DialogOverlay } from "../components/ui/Dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/Table";
 import { Card, CardContent, CardHeader } from "../components/ui/Card";
 import { PlusCircle, Loader2, Search, FileDown } from "lucide-react";
@@ -80,31 +80,34 @@ export default function Organizations() {
               Create Organization
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Create New Organization</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit}>
-                <div className="space-y-4 py-4">
-                    <div>
-                        <Label htmlFor="code">Code</Label>
-                        <Input id="code" value={code} onChange={(e) => setCode(e.target.value)} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="name">Name</Label>
-                        <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-                    </div>
-                </div>
-                <Button type="submit" disabled={createMutation.isPending} className="w-full mt-2">
-                  {createMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
-                    </>
-                  ) : "Create"}
-                </Button>
-            </form>
-          </DialogContent>
+          <DialogPortal>
+            <DialogOverlay />
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Create New Organization</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit}>
+                  <div className="space-y-4 py-4">
+                      <div>
+                          <Label htmlFor="code">Code</Label>
+                          <Input id="code" value={code} onChange={(e) => setCode(e.target.value)} required />
+                      </div>
+                      <div>
+                          <Label htmlFor="name">Name</Label>
+                          <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                      </div>
+                  </div>
+                  <Button type="submit" disabled={createMutation.isPending} className="w-full mt-2">
+                    {createMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : "Create"}
+                  </Button>
+              </form>
+            </DialogContent>
+          </DialogPortal>
         </Dialog>
       </div>
 
