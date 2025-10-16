@@ -10,6 +10,7 @@ import {
   ChevronDown,
   BookUser,
   UserCog,
+  Package2,
 } from "lucide-react";
 
 // New navigation structure
@@ -69,14 +70,14 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <div className="flex">
-        <aside className="w-64 min-h-screen bg-card border-r border-border fixed top-0 left-0">
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-foreground">Delfi Inventory Pro</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Warehouse Management System
-            </p>
+        <aside className="w-64 h-screen bg-card border-r border-border fixed top-0 left-0 flex flex-col">
+          <div className="p-4 border-b border-border">
+            <Link to="/dashboard" className="flex items-center gap-3">
+              <Package2 className="h-6 w-6" />
+              <span className="text-xl font-bold text-foreground">Delfi Pro</span>
+            </Link>
           </div>
-          <nav className="px-3 space-y-1">
+          <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
             {navigation.map((item, index) => {
               if (item.type === "header") {
                 return (

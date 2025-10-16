@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../client";
@@ -6,9 +5,11 @@ import type { Organization } from "../types";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Label } from "../components/ui/Label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "../components/ui/Dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/Dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/Table";
-import { PlusCircle, Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader } from "../components/ui/Card";
+import { PlusCircle, Loader2, Search, FileDown } from "lucide-react";
+import { toast } from "../components/ui/use-toast";
 
 const OrgStatusBadge = ({ status }: { status: string }) => {
   const baseClasses = "px-2.5 py-0.5 text-xs font-semibold rounded-full";
@@ -44,11 +45,17 @@ export default function Organizations() {
       setIsDialogOpen(false);
       setCode("");
       setName("");
-      // Using a more integrated notification would be better than alert in a real app
-      alert("Organization created!");
+      toast({
+        title: "Success!",
+        description: "A new organization has been created.",
+      });
     },
     onError: (error: Error) => {
-      alert(`Error: ${error.message}`);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
     },
   });
 
@@ -64,7 +71,7 @@ export default function Organizations() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Organizations</h2>
-          <p className="text-muted-foreground">Manage your organization hierarchy.</p>
+          <p className="text-sm text-muted-foreground">Manage your organization hierarchy.</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -78,18 +85,17 @@ export default function Organizations() {
               <DialogTitle>Create New Organization</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="code" className="text-right">Code</Label>
-                        <Input id="code" value={code} onChange={(e) => setCode(e.target.value)} required className="col-span-3" />
+                <div className="space-y-4 py-4">
+                    <div>
+                        <Label htmlFor="code">Code</Label>
+                        <Input id="code" value={code} onChange={(e) => setCode(e.target.value)} required />
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">Name</Label>
-                        <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required className="col-span-3" />
+                    <div>
+                        <Label htmlFor="name">Name</Label>
+                        <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
                     </div>
                 </div>
-              <DialogFooter>
-                <Button type="submit" disabled={createMutation.isPending}>
+                <Button type="submit" disabled={createMutation.isPending} className="w-full mt-2">
                   {createMutation.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -97,43 +103,56 @@ export default function Organizations() {
                     </>
                   ) : "Create"}
                 </Button>
-              </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="border rounded-lg shadow-sm">
-        {isLoading ? (
-          <div className="flex items-center justify-center p-10">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-4 text-muted-foreground">Loading organizations...</p>
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[120px]">Code</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="w-[100px]">Status</TableHead>
-                <TableHead className="w-[180px]">Created At</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {organizations?.map((org) => (
-                <TableRow key={org.id}>
-                  <TableCell className="font-mono text-sm">{org.code}</TableCell>
-                  <TableCell className="font-medium">{org.name}</TableCell>
-                  <TableCell>
-                    <OrgStatusBadge status={org.status} />
-                  </TableCell>
-                  <TableCell>{new Date(org.created_at).toLocaleString()}</TableCell>
+      <Card>
+        <CardHeader>
+            <div className="flex items-center justify-between gap-4">
+                <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input placeholder="Search organizations..." className="pl-8 sm:w-[300px]" />
+                </div>
+                <Button variant="secondary">
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Export
+                </Button>
+            </div>
+        </CardHeader>
+        <CardContent>
+            {isLoading ? (
+            <div className="flex items-center justify-center p-10">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="ml-4 text-muted-foreground">Loading organizations...</p>
+            </div>
+            ) : (
+            <Table>
+                <TableHeader>
+                <TableRow>
+                    <TableHead className="w-[120px] text-muted-foreground">Code</TableHead>
+                    <TableHead className="text-muted-foreground">Name</TableHead>
+                    <TableHead className="w-[100px] text-muted-foreground">Status</TableHead>
+                    <TableHead className="w-[180px] text-muted-foreground">Created At</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
+                </TableHeader>
+                <TableBody>
+                {organizations?.map((org) => (
+                    <TableRow key={org.id}>
+                    <TableCell className="font-mono text-sm font-medium">{org.code}</TableCell>
+                    <TableCell className="font-medium">{org.name}</TableCell>
+                    <TableCell>
+                        <OrgStatusBadge status={org.status} />
+                    </TableCell>
+                    <TableCell>{new Date(org.created_at).toLocaleString()}</TableCell>
+                    </TableRow>
+                ))}
+                </TableBody>
+            </Table>
+            )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
