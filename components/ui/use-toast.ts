@@ -2,43 +2,35 @@ import * as React from 'react';
 
 export type ToastActionElement = React.ReactElement;
 
-export interface ToastProps {
+type ToastProps = {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
   variant?: 'default' | 'destructive';
-}
-
-type ToasterToast = ToastProps & {
-  id: string;
-  title?: React.ReactNode;
-  description?: React.ReactNode;
-  action?: ToastActionElement;
 };
 
 const TOAST_LIMIT = 5;
-const TOAST_REMOVE_DELAY = 10000; // 10 seconds
+const TOAST_REMOVE_DELAY = 10000;
 
 type ToastState = {
-  toasts: ToasterToast[];
+  toasts: ToastProps[];
 };
-
-let memoryState: ToastState = { toasts: [] };
 
 const listeners: Array<(state: ToastState) => void> = [];
+let memoryState: ToastState = { toasts: [] };
 
-const setState = (newState: Partial<ToastState>) => {
+function setState(newState: Partial<ToastState>) {
   memoryState = { ...memoryState, ...newState };
-  listeners.forEach((listener) => {
+  for (const listener of listeners) {
     listener(memoryState);
-  });
-};
+  }
+}
 
-export function toast(props: Omit<ToasterToast, 'id'>) {
-  const id = Math.random().toString(36).substr(2, 9);
+export function toast(props: Omit<ToastProps, 'id'>) {
+  const id = Math.random().toString(36).substring(2, 11);
 
-  const newToast = { ...props, id };
+  const newToast = { id, ...props };
   const updatedToasts = [newToast, ...memoryState.toasts].slice(0, TOAST_LIMIT);
 
   setState({
@@ -48,6 +40,8 @@ export function toast(props: Omit<ToasterToast, 'id'>) {
   setTimeout(() => {
     dismiss(id);
   }, TOAST_REMOVE_DELAY);
+
+  return { id };
 }
 
 export function dismiss(id: string) {
@@ -60,17 +54,14 @@ export function useToast() {
   const [state, setStateReact] = React.useState<ToastState>(memoryState);
 
   React.useEffect(() => {
-    const listener = (newState: ToastState) => {
-      setStateReact(newState);
-    };
-    listeners.push(listener);
+    listeners.push(setStateReact);
     return () => {
-      const index = listeners.indexOf(listener);
+      const index = listeners.indexOf(setStateReact);
       if (index > -1) {
         listeners.splice(index, 1);
       }
     };
-  }, []);
+  }, [state]);
 
   return {
     ...state,

@@ -36,7 +36,7 @@ export type Location = {
   name: string;
   status: string;
   warehouse_id: string;
-  type: "storage" | "receiving" | "staging";
+  location_type: "storage" | "receiving" | "staging";
   capacity: number | null;
   allow_mixed_lot: boolean;
   warehouse?: { name: string } | null;

@@ -5,7 +5,7 @@ import type { Organization } from "../types";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Label } from "../components/ui/Label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogPortal, DialogOverlay, DialogFooter, DialogDescription } from "../components/ui/Dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "../components/ui/Dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/Table";
 import { Card, CardContent, CardHeader } from "../components/ui/Card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/Select";
@@ -157,72 +157,66 @@ export default function Organizations() {
       </div>
 
       <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
-          <DialogPortal>
-            <DialogOverlay />
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>{selectedOrg ? 'Edit Organization' : 'Create New Organization'}</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit}>
-                  <div className="space-y-4 py-4">
-                      <div>
-                          <Label htmlFor="code">Code</Label>
-                          <Input id="code" value={code} onChange={(e) => setCode(e.target.value)} required />
-                      </div>
-                      <div>
-                          <Label htmlFor="name">Name</Label>
-                          <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-                      </div>
-                      {selectedOrg && (
-                        <div>
-                            <Label htmlFor="status">Status</Label>
-                            <Select value={status} onValueChange={setStatus}>
-                                <SelectTrigger id="status">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="active">Active</SelectItem>
-                                    <SelectItem value="inactive">Inactive</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                      )}
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{selectedOrg ? 'Edit Organization' : 'Create New Organization'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+              <div className="space-y-4 py-4">
+                  <div>
+                      <Label htmlFor="code">Code</Label>
+                      <Input id="code" value={code} onChange={(e) => setCode(e.target.value)} required />
                   </div>
-                  <Button type="submit" disabled={isMutating} className="w-full mt-2">
-                    {isMutating ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {selectedOrg ? 'Saving...' : 'Creating...'}
-                      </>
-                    ) : (selectedOrg ? 'Save Changes' : 'Create')}
-                  </Button>
-              </form>
-            </DialogContent>
-          </DialogPortal>
-        </Dialog>
+                  <div>
+                      <Label htmlFor="name">Name</Label>
+                      <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                  </div>
+                  {selectedOrg && (
+                    <div>
+                        <Label htmlFor="status">Status</Label>
+                        <Select value={status} onValueChange={setStatus}>
+                            <SelectTrigger id="status">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="active">Active</SelectItem>
+                                <SelectItem value="inactive">Inactive</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                  )}
+              </div>
+              <Button type="submit" disabled={isMutating} className="w-full mt-2">
+                {isMutating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {selectedOrg ? 'Saving...' : 'Creating...'}
+                  </>
+                ) : (selectedOrg ? 'Save Changes' : 'Create')}
+              </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-            <DialogPortal>
-                <DialogOverlay />
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Are you sure you want to delete?</DialogTitle>
-                        <DialogDescription>
-                            This action cannot be undone. This will permanently delete the <strong>{selectedOrg?.name}</strong> organization.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="sm:justify-start">
-                        <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deleteMutation.isPending}>
-                            {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Delete
-                        </Button>
-                        <Button variant="secondary" onClick={() => setIsDeleteDialogOpen(false)}>
-                            Cancel
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </DialogPortal>
-        </Dialog>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+                <DialogTitle>Are you sure you want to delete?</DialogTitle>
+                <DialogDescription>
+                    This action cannot be undone. This will permanently delete the <strong>{selectedOrg?.name}</strong> organization.
+                </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="sm:justify-start">
+                <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deleteMutation.isPending}>
+                    {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Delete
+                </Button>
+                <Button variant="secondary" onClick={() => setIsDeleteDialogOpen(false)}>
+                    Cancel
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Card>
         <CardHeader>
